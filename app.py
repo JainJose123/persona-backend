@@ -16,9 +16,9 @@ memory = {
     "last_chat": None,
     "last_tasks": None,
     "history": {
-        "chats": [],   # list of {user, ai, ts}
-        "tasks": [],   # list of {goal, items (string), ts}
-        "emails": []   # list of {thread, draft, ts}
+        "chats": [],   
+        "tasks": [],   
+        "emails": []   
     }
 }
 
@@ -66,9 +66,9 @@ def ask():
     )
 
     models = [
-        "meta-llama/llama-3.1-8b-instruct",   # primary
-        "mistralai/mistral-7b-instruct-v0.3", # fallback 1
-        "google/gemma-2-9b-it"                # fallback 2
+        "meta-llama/llama-3.1-8b-instruct",   
+        "mistralai/mistral-7b-instruct-v0.3", 
+        "google/gemma-2-9b-it"                
     ]
 
     for m in models:
