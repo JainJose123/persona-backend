@@ -3,19 +3,14 @@ import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-# -----------------------------------------------------------------------------
-# ⚙️ Basic setup
-# -----------------------------------------------------------------------------
+
 app = Flask(__name__)
 CORS(app)
 
 OPENROUTER_KEY = os.getenv("OPENROUTER_KEY", "")
 MODEL = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct")
 
-# -----------------------------------------------------------------------------
-# 💾 In-memory state (simple demo store)
-#  - Replace with a DB if you deploy (SQLite/Postgres/Mongo)
-# -----------------------------------------------------------------------------
+
 memory = {
     "xp": 500,
     "last_chat": None,
@@ -35,9 +30,7 @@ def _headers(title="Persona Assistant"):
         "Content-Type": "application/json",
     }
 
-# -----------------------------------------------------------------------------
-# 🔧 Utility: call OpenRouter chat completions
-# -----------------------------------------------------------------------------
+
 def call_openrouter(messages, model=MODEL, max_tokens=120, temperature=0.7, title="Persona"):
     try:
         r = requests.post(
@@ -56,9 +49,7 @@ def call_openrouter(messages, model=MODEL, max_tokens=120, temperature=0.7, titl
     except Exception as e:
         return {"error": str(e)}
 
-# -----------------------------------------------------------------------------
-# 💬 Chat (stores to history)
-# -----------------------------------------------------------------------------
+
 @app.route("/api/ask", methods=["POST"])
 def ask():
     """Concise chat; store user + AI reply in history."""
@@ -95,9 +86,7 @@ def ask():
 
     return jsonify({"error":"All models failed"}), 500
 
-# -----------------------------------------------------------------------------
-# 📝 Tasks (stores to history)
-# -----------------------------------------------------------------------------
+
 @app.route("/api/tasks", methods=["POST"])
 def create_tasks():
     """Generate 3 short actionable bullets; store in history."""
@@ -121,9 +110,7 @@ def create_tasks():
         return jsonify({"tasks": items})
     return jsonify({"error": resp}), 400
 
-# -----------------------------------------------------------------------------
-# 📧 Email drafting (stores to history)
-# -----------------------------------------------------------------------------
+
 @app.route("/api/draft-email", methods=["POST"])
 def draft_email():
     """Generate a short professional email reply; store in history."""
@@ -153,9 +140,7 @@ def draft_email():
         return jsonify({"draft": draft})
     return jsonify({"error": resp}), 400
 
-# -----------------------------------------------------------------------------
-# ⭐ XP
-# -----------------------------------------------------------------------------
+
 @app.route("/api/xp", methods=["POST"])
 def xp_update():
     """Add XP based on action type and return total."""
@@ -165,9 +150,7 @@ def xp_update():
     memory["xp"] += gain
     return jsonify({"action": action, "xp_gained": gain, "total_xp": memory["xp"]})
 
-# -----------------------------------------------------------------------------
-# 🩺 Health (plus quick snapshot)
-# -----------------------------------------------------------------------------
+
 @app.route("/api/health", methods=["GET"])
 def health():
     return jsonify({
@@ -178,9 +161,7 @@ def health():
         "last_tasks": memory["last_tasks"]
     })
 
-# -----------------------------------------------------------------------------
-# 🕓 History APIs
-# -----------------------------------------------------------------------------
+
 @app.route("/api/history", methods=["GET"])
 def get_history():
     """Return limited recent history for sidebar."""
@@ -198,9 +179,7 @@ def clear_history():
     memory["history"] = {"chats": [], "tasks": [], "emails": []}
     return jsonify({"ok": True})
 
-# -----------------------------------------------------------------------------
-# 🚀 Run server
-# -----------------------------------------------------------------------------
+
 if __name__ == "__main__":
     print("🚀 Persona Backend running → http://127.0.0.1:5001")
     if not OPENROUTER_KEY:
